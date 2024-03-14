@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test/cubit/userCubit.dart';
-import 'package:test/pages/ProductPage.dart';
+import 'package:test/pages/productpage.dart';
 import 'package:test/widgets/searchbar.dart';
 
 class HomePage extends StatefulWidget {

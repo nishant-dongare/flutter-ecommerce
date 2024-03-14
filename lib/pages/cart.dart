@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test/cubit/userCubit.dart';
-import 'package:test/pages/ProductPage.dart';
+import 'package:test/pages/productpage.dart';
 
 class Cart extends StatelessWidget {
   const Cart({super.key});
