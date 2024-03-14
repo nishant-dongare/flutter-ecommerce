@@ -26,32 +26,66 @@ class Cart extends StatelessWidget {
             itemCount: state.cart!.length,
             itemBuilder: (context, index) {
               return GestureDetector(
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(7),
-                      child: Image.network(
-                        height: 120,
-                        width: 120,
-                        state.cart![index].image,
-                        fit: BoxFit.cover,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(7),
+                        child: Image.network(
+                          height: 120,
+                          width: 120,
+                          state.cart![index].image,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 20),
-                    Flexible(
-                      child: Text(
-                        state.cart![index].title,
-                        overflow: TextOverflow.ellipsis,
+                      const SizedBox(width: 20),
+                      Flexible(
+                        child: Column(
+                          children: [
+                            Align(
+                              alignment:Alignment.centerLeft,
+                              child: Text(
+                                state.cart![index].title,
+                                overflow: TextOverflow.visible,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                state.cart![index].price,
+                                overflow: TextOverflow.visible,
+                                style: const TextStyle(
+                                  color: Colors.green,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              maxLines: 3,
+                              state.cart![index].description,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            ProductPageView(product: state.cart![index])),
+                      builder: (context) =>
+                          ProductPageView(product: state.cart![index]),
+                    ),
                   );
                 },
               );

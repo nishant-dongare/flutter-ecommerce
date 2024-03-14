@@ -26,6 +26,11 @@ class MyApp extends StatelessWidget {
             backgroundColor: Colors.black,
             foregroundColor: Colors.white,
           ),
+          inputDecorationTheme: const InputDecorationTheme(
+            hintStyle: TextStyle(
+              color: Colors.white,
+            )
+          ),
           elevatedButtonTheme: const ElevatedButtonThemeData(
             style: ButtonStyle(
               backgroundColor: MaterialStatePropertyAll(Colors.black),
@@ -45,7 +50,7 @@ class MyApp extends StatelessWidget {
             background: Colors.white,
             onBackground: Colors.black,
             surface: Colors.white,
-            onSurface: Colors.white,
+            onSurface: Colors.black,
           ),
         ),
 
