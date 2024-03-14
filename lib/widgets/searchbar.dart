@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:test/models/product.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
-// Demo list to show querying
   List<Product> items;
 
   CustomSearchDelegate({required this.items});
-// first overwrite to
-// clear the search text
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
@@ -20,7 +17,6 @@ class CustomSearchDelegate extends SearchDelegate {
     ];
   }
 
-// second overwrite to pop out of search menu
   @override
   Widget? buildLeading(BuildContext context) {
     return IconButton(
@@ -31,7 +27,6 @@ class CustomSearchDelegate extends SearchDelegate {
     );
   }
 
-// third overwrite to show query result
   @override
   Widget buildResults(BuildContext context) {
     List<Product> matchQuery = [];
@@ -67,8 +62,6 @@ class CustomSearchDelegate extends SearchDelegate {
     );
   }
 
-// last overwrite to show the
-// querying process at the runtime
   @override
   Widget buildSuggestions(BuildContext context) {
     List<Product> matchQuery = [];

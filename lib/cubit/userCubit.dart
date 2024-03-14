@@ -6,36 +6,49 @@ import 'package:test/models/User.dart';
 import 'package:http/http.dart' as http;
 import 'package:test/models/product.dart';
 
-
-class UserData{
+class UserData {
   String? token;
   User? user;
   List<Product>? productList;
   List<Product>? cart;
-  UserData({this.token,this.user,this.productList,this.cart});
+  UserData({this.token, this.user, this.productList, this.cart});
+
+  UserData copyWith({
+    String? token,
+    User? user,
+    List<Product>? productList,
+    List<Product>? cart,
+  }) {
+    return UserData(
+      token: token ?? this.token,
+      user: user ?? this.user,
+      productList: productList ?? this.productList,
+      cart: cart ?? this.cart,
+    );
+  }
 }
 
-
-class UserCubit extends Cubit<UserData>{
+class UserCubit extends Cubit<UserData> {
   final headers = {'Content-Type': 'application/json'};
 
-  UserCubit():super(UserData());
+  UserCubit() : super(UserData());
 
-  FutureOr<void> register({required String username,required String password}) async {
+  FutureOr<String> register(
+      {required String username, required String password}) async {
     final url = Uri.parse('https://fakestoreapi.com/users');
     dynamic body = jsonEncode({
-    'email': username,
-    'username': username,
-    'password': password,
-    'name': {'firstname': 'John', 'lastname': 'Doe'},
-    'address': {
-    'city': 'kilcoole',
-    'street': '7835 new road',
-    'number': 3,
-    'zipcode': '12926-3874',
-    'geolocation': {'lat': '-37.3159', 'long': '81.1496'}
-    },
-    'phone': '1-570-236-7033'
+      'email': username,
+      'username': username,
+      'password': password,
+      'name': {'firstname': 'John', 'lastname': 'Doe'},
+      'address': {
+        'city': 'kilcoole',
+        'street': '7835 new road',
+        'number': 3,
+        'zipcode': '12926-3874',
+        'geolocation': {'lat': '-37.3159', 'long': '81.1496'}
+      },
+      'phone': '1-570-236-7033'
     });
 
     var response = await http.post(url, headers: headers, body: body);
@@ -43,20 +56,19 @@ class UserCubit extends Cubit<UserData>{
     if (response.statusCode == 200) {
       print("User Added ${response.body}");
       final json = jsonDecode(response.body);
-      if(json['id'] != 0){
-        //print(json['id']);
+      if (json['id'] != 0) {
         body = jsonDecode(body);
         body['id'] = json['id'];
-        //print(body['id']);
-        emit(UserData(user:User.fromJson(body)));
+        emit(state.copyWith(user: User.fromJson(body)));
       }
+      return '';
     } else {
-      print('Failed to post user. Error: ${response.statusCode}');
-    }    
+      return 'ErrorCode: ${response.statusCode}\nError:${response.body}';
+    }
   }
 
-
-  FutureOr<void> login({required String username,required String password}) async {
+  FutureOr<String> login(
+      {required String username, required String password}) async {
     final loginUrl = Uri.parse('https://fakestoreapi.com/auth/login');
     dynamic body = jsonEncode({
       'username': username,
@@ -68,66 +80,67 @@ class UserCubit extends Cubit<UserData>{
     if (response.statusCode == 200) {
       print("User Login ${response.body}");
       final json = jsonDecode(response.body);
-      emit(UserData(token: json['token']));
-
+      emit(state.copyWith(token: json['token']));
+      return '';
     } else {
-      print('Failed to post user. Error: ${response.body}');
+      return 'ErrorCode: ${response.statusCode}\nError:${response.body}';
     }
   }
 
   FutureOr<void> getProducts() async {
     final response =
-    await http.get(Uri.parse('https://fakestoreapi.com/products'));
+        await http.get(Uri.parse('https://fakestoreapi.com/products'));
 
     if (response.statusCode == 200) {
-      List<Product> productList=[];
+      List<Product> productList = [];
       final List products = jsonDecode(response.body);
-      //print(products);
-      for(var product in products){
+      productList.addAll(products.map((product) => Product.fromJson(product)));
+
+      /*for(final product in products) {
         productList.add(Product.fromJson(product));
-      }
-      emit(UserData(productList: productList));
-      //print(state.productList);
+      }*/
+      emit(state.copyWith(productList: productList));
     } else {
-      print('Failed to load products. Error: ${response.statusCode}');
+      print('Failed to load products. ErrorCode: ${response.statusCode}\nError:${response.body}');
     }
   }
 
-  void addToCart(Product product){
-    if(state.cart == null){
-      final emptyList = <Product>[];
-      emit(UserData(cart:emptyList));
+  void addToCart(Product product) {
+    final List<Product> updatedCart = List<Product>.from(state.cart ?? []);
+
+    final bool alreadyInCart =
+        updatedCart.any((cartProduct) => cartProduct.id == product.id);
+
+    if (!alreadyInCart) {
+      updatedCart.add(product);
+      emit(state.copyWith(cart: updatedCart));
+    } else {
+      print('Product is already in the cart.');
     }
-    List<Product> pl = state.cart!;
-    pl.add(product);
-    emit(UserData(cart: pl));
   }
 
   bool isProductInCart(Product product) {
-    // Check if cart is null
     if (state.cart == null) {
       return false;
     }
-
-    // Iterate through each product in the cart
-    for (Product cartProduct in state.cart!) {
-      // Check if the product ID matches the given product
-      if (cartProduct.id == product.id) {
-        return true; // Product is already in the cart
-      }
-    }
-    return false; // Product is not in the cart
+    return state.cart!.any((cartProduct) => cartProduct.id == product.id);
   }
 
   void removeFromCart(Product product) {
     if (state.cart == null) {
-      return; // Cart is empty, nothing to remove
+      return;
     }
-
     List<Product> updatedCart = List<Product>.from(state.cart!);
-
     updatedCart.removeWhere((cartProduct) => cartProduct.id == product.id);
-
-    emit(UserData(cart: updatedCart));
+    emit(state.copyWith(cart: updatedCart,productList: state.productList));
   }
+
+  String? getName() {
+    if(state.user?.id == null ||state.user!.id == 0){
+      return null;
+    }
+    return "${state.user!.name!.firstname!} ${state.user!.name!.lastname!}";
+  }
+
+
 }

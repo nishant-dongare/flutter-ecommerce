@@ -9,7 +9,6 @@ class ProductPageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isAdded = BlocProvider.of<UserCubit>(context).isProductInCart(product);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Product Details'),
@@ -24,7 +23,7 @@ class ProductPageView extends StatelessWidget {
                 child: Image.network(
                   product.image,
                   height: 400,
-                  width:400,
+                  width: 400,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -63,17 +62,32 @@ class ProductPageView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 50),
-
             Center(
-              child: ElevatedButton(
-                onPressed: (){
-                  if(isAdded) {
-                    BlocProvider.of<UserCubit>(context).addToCart(product);
-                  }else{
-                    BlocProvider.of<UserCubit>(context).removeFromCart(product);
-                  }
-                },
-                child: Text(isAdded?'Remove':'Add to Cart'),
+              child: BlocBuilder<UserCubit,UserData>(
+                builder: (context,state) {
+                  final userCubit = BlocProvider.of<UserCubit>(context);
+                  bool isAdded = userCubit.isProductInCart(product);
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          if (isAdded) {
+                            userCubit.removeFromCart(product);
+                          } else {
+                            userCubit.addToCart(product);
+                          }
+                        },
+                        child: Text(isAdded ? 'Remove' : 'Add to Cart'),
+                      ),
+                      const SizedBox(width: 70),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pushNamed(context, 'cart'),
+                        child: const Text('Go to Cart'),
+                      ),
+                    ],
+                  );
+                }
               ),
             ),
             const SizedBox(height: 50),

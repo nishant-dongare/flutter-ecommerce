@@ -22,10 +22,34 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Ecommerce',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+          ),
+          elevatedButtonTheme: const ElevatedButtonThemeData(
+            style: ButtonStyle(
+              backgroundColor: MaterialStatePropertyAll(Colors.black),
+              foregroundColor: MaterialStatePropertyAll(Colors.white),
+            )
+          ),
+          textSelectionTheme: const TextSelectionThemeData( cursorColor: Colors.blueGrey),
           useMaterial3: true,
+          colorScheme: const ColorScheme(
+            brightness: Brightness.dark,
+            primary: Colors.black,
+            onPrimary: Colors.white,
+            secondary: Colors.white,
+            onSecondary: Colors.black,
+            error: Colors.red,
+            onError: Colors.white,
+            background: Colors.white,
+            onBackground: Colors.black,
+            surface: Colors.white,
+            onSurface: Colors.white,
+          ),
         ),
-        initialRoute: '/',
+
+        initialRoute: 'login',
         routes: {
           '/': (context) => const HomePage(),
           'login': (context) => const Login(),
